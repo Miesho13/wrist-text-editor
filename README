@@ -1,0 +1,39 @@
+
+*** Wrist Text Editor ***
+
+This is a simple project which contains the source code of Wrist code editor. 
+The Wrist text editor is designed to be lightweight, fast, and easy to use, 
+providing a minimalistic yet functional interface for coding and text editing.
+
+Features:
+    * Lightweight and Fast: Optimized for speed and efficiency, allowing for 
+      quick editing and navigation.
+    * User-Friendly Interface: A clean and intuitive interface that simplifies 
+      the coding process.
+    * Syntax Highlighting: Supports syntax highlighting for multiple programming 
+      languages, making it easier to read and write code.
+    * Customizable Themes: Offers a variety of themes to customize the look and 
+      feel of the editor to your preference.
+
+Installation:
+    To install the Wrist text editor, clone the repository to your local machine 
+    using the following command:
+    git clone https://github.com/yourusername/wrist-text-editor.git
+    Navigate to the project directory and run the installation script (if 
+    applicable).
+
+Usage:
+    After installation, you can start the Wrist text editor by executing the 
+    launch script from the terminal:
+    ./launch_wrist_editor.sh
+    Refer to the documentation for more detailed usage instructions and advanced 
+    features.
+
+Contributing:
+    We welcome contributions to the Wrist text editor project. If you're 
+    interested in contributing, please read our contributing guidelines 
+    located in the CONTRIBUTING.md file.
+
+License:
+    The Wrist text editor is released under the MIT License. For more details,
+    see the LICENSE file in the project repository.

@@ -2,6 +2,8 @@ const std = @import("std");
 const print = std.debug.print;
 const heap = std.heap.page_allocator;
 const line = std.ArrayList(u8).init(heap);
+const os = std.os;
+const termios = std.os.termios;
 
 const Editor = struct {
     line_pos: i32,
@@ -48,22 +50,22 @@ const Editor = struct {
     }
 
     pub fn popc(self: *Editor) !void {
-        const idx: usize  = @intCast(self.char_pos);
-        const list = self.line_buffer.items[@intCast(self.line_pos)];
-
-        if (idx >= list.items.len) {
-            return error.IndexOutOfBounds;
-        }
-        std.mem.copyForwards(i8, list.items[idx..], list.items[idx + 1..]);
-         _ = list.pop();
+        _ = self.line_buffer.items[@intCast(self.line_pos)].orderedRemove(@intCast(self.char_pos));
     }
 
     pub fn load() void {
 
     }
 
-    pub fn save() void {
-        
+    pub fn save(self: *Editor, path: []const u8) !void {
+        var file = try std.fs.cwd().createFile(path, .{
+            .truncate = true,
+        });
+        defer file.close();
+
+        for (self.line_buffer.items) |itm| {
+            try file.writeAll(itm.items);
+        }
     }
 
     pub fn debug_print(self: *Editor) void {
@@ -74,39 +76,33 @@ const Editor = struct {
 
 };
 
+pub fn enableRawMode() !termios.Termios {
+    var original = try termios.tcgetattr(os.STDIN_FILENO);
+    var raw = original;
+
+    raw.lflag &= ~termios.ICANON; // disable canonical mode
+    raw.lflag &= ~termios.ECHO;   // disable echo
+    // raw.lflag &= ~termios.ISIG;   // disable Ctrl-C and Ctrl-Z
+    raw.iflag &= ~(termios.IXON | termios.ICRNL); // disable Ctrl-S/Q and CR-to-NL
+    raw.c_oflag &= ~termios.OPOST; // disable output processing
+    raw.c_cc[termios.VMIN] = 1;
+    raw.c_cc[termios.VTIME] = 0;
+
+    try termios.tcsetattr(os.STDIN_FILENO, termios.TCSAFLUSH, &raw);
+
+    return original;
+}
+
+pub fn disableRawMode(original: termios.Termios) void {
+    _ = termios.tcsetattr(os.STDIN_FILENO, termios.TCSAFLUSH, &original);
+}
+
 
 pub fn main() !void {
-    var editor = Editor.init(heap);
-    try editor.new_line();
-
-    try editor.putc('A');
-    editor.mv_cursor(0, 1);
-
-    try editor.putc('B');
-    editor.mv_cursor(0, 1);
-
-    try editor.putc('C');
-    editor.mv_cursor(1, 0);
-    try editor.new_line();
-
-    try editor.putc('D');
-    editor.mv_cursor(1, 0);
-    try editor.new_line();
-
-    try editor.putc('Z');
-    editor.mv_cursor(0, 1);
-
-    try editor.putc('Y');
-    editor.mv_cursor(0, 1);
-
-    try editor.putc('A');
-    editor.debug_print();
-    
-    print("--------------", .{});
-
-    try editor.popc();
-
-    editor.debug_print();
+    enableRawMode();
+    disableRawMode();
+    print("\x1b[2J", .{});
+    print("\x1b[H", .{});
 }
 
 

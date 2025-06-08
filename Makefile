@@ -14,7 +14,7 @@ all: build
 build:
 	@echo "Building $(SRC) -> $(OUT_BIN) [$(MODE)]"
 	@mkdir -p $(OUT_DIR)
-	$(ZIG) build-exe $(SRC) -O $(MODE) -femit-bin=$(OUT_BIN)
+	$(ZIG) build-exe $(SRC) -O $(MODE) -femit-bin=$(OUT_BIN) -lc
 
 .PHONY: run
 run: build

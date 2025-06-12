@@ -16,17 +16,24 @@ const CLEAR_TERMINAL = "\x1b[2J\x1b[H";
 
 pub fn main() !void {
     tui.enable_raw_mod();
-    print("{s}", .{CLEAR_TERMINAL});
+    tui.clear();
 
     var ed = editor.Editor.init(heap);
     try ed.new_line();
     try ed.putc('q');
+    
+    tui.puts("===========", 15, 15);
+    tui.puts("|", 14, 16);
+    tui.puts("|", 26, 16);
+    tui.puts("===========", 15, 17);
 
-    print("\x1B[15;15H", .{});
-    ed.debug_print();
-
-    var ch: c_char = undefined;
-    while ((c.read(c.STDIN_FILENO, &ch, 1) == 1 ) and (ch != 'q')) { }
+    tui.set_currsor(0,0);
+    tui.canvas_size();
+    
+    var quit: bool = false;
+    while (!quit) { 
+        quit = tui.evnet_loop();
+    }
 }
 
 

@@ -27,6 +27,9 @@ pub fn main() !void {
     tui.puts("|", 26, 16);
     tui.puts("===========", 15, 17);
 
+    tui.puts("XxxxDD", 13, 13);
+
+
     tui.set_currsor(0,0);
     tui.canvas_size();
     

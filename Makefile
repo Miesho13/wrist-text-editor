@@ -6,6 +6,7 @@ MODE      := Debug # or ReleaseSafe / ReleaseFast / ReleaseSmall
 SRC       := src/main.zig
 OUT_DIR   := build
 OUT_BIN   := $(OUT_DIR)/app
+ZIG_TEST  := test/main_test.zig
 
 .PHONY: all
 all: build
@@ -20,6 +21,11 @@ build:
 run: build
 	@echo "Running..."
 	@$(OUT_BIN)
+
+.PHONY: test
+test:
+	@echo "Running tests in zig.test..."
+	$(ZIG) test $(ZIG_TEST)
 
 .PHONY: clean
 clean:

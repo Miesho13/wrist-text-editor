@@ -125,6 +125,12 @@ pub fn evnet_loop() bool {
         },
         else => { },
     }
-    
+
     return false;
+}
+
+pub fn get_key() u8 {
+    var ch: u8 = undefined;
+    _ = c.read(c.STDIN_FILENO, &ch, 1);
+    return ch;
 }

@@ -134,3 +134,45 @@ pub fn get_key() u8 {
     _ = c.read(c.STDIN_FILENO, &ch, 1);
     return ch;
 }
+
+pub const FrameBuffer = struct {
+
+    pub fn init(allocator: std.mem.Allocator, height: u32, width: u32, x_frame_pos: u32, y_frame_pos: u32) !FrameBuffer {
+        const buffer: []u8 = try allocator.alloc(u8, height * width);
+        @memset(buffer, 0);
+
+        return FrameBuffer {
+            .height_ = height,
+            .width_ = width,
+            .x_frame_pos_ = x_frame_pos,
+            .y_frame_pos_ = y_frame_pos,
+            .frame_buffer = buffer,
+        };
+    }
+    
+    pub fn deinit(self: *FrameBuffer, allocator: std.mem.Allocator) void {
+        allocator.free(self.frame_buffer);
+    }
+
+    pub fn putc(self: *FrameBuffer, ch: u8, x: u32, y: u32) void {
+        self.frame_buffer[x * (y - 1) + x] = ch;
+    }
+    
+    pub fn get_buffer(self: *FrameBuffer) []u8 {
+        return self.frame_buffer;
+    }
+
+    height_: u32,
+    width_: u32,
+    x_frame_pos_: u32, 
+    y_frame_pos_: u32,
+    frame_buffer : []u8,
+};
+
+pub fn render_frame_buffer(frame_buffer: *FrameBuffer) void {
+    for (frame_buffer.get_buffer()) |ch| {
+        if (ch == 0) { print(" ", .{}); }
+        print("{c}", .{ch});
+    }
+}
+

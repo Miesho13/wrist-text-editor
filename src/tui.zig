@@ -155,7 +155,7 @@ pub const FrameBuffer = struct {
     }
 
     pub fn putc(self: *FrameBuffer, ch: u8, x: u32, y: u32) void {
-        self.frame_buffer[x * (y - 1) + x] = ch;
+        self.frame_buffer[y * self.width_ + x] = ch;
     }
     
     pub fn get_buffer(self: *FrameBuffer) []u8 {
@@ -171,7 +171,7 @@ pub const FrameBuffer = struct {
 
 pub fn render_frame_buffer(frame_buffer: *FrameBuffer) void {
     for (frame_buffer.get_buffer()) |ch| {
-        if (ch == 0) { print(" ", .{}); }
+        if (ch == 0) { continue; }
         print("{c}", .{ch});
     }
 }

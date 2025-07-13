@@ -37,10 +37,10 @@ pub fn puts(str: [] const u8, x: usize, y: usize) void {
     print("{s}", .{str});
 }
 
-pub fn canvas_size() void {
+pub fn canvas_size() c.winsize {
     var w: c.winsize = undefined; 
     _ = c.ioctl(c.STDOUT_FILENO, c.TIOCGWINSZ, &w);
-    print("col: {} row: {}", .{w.ws_col, w.ws_row});
+    return w; 
 } 
 
 pub const Key = enum(u8) {

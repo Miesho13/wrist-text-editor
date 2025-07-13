@@ -162,6 +162,23 @@ pub const FrameBuffer = struct {
         return self.frame_buffer;
     }
 
+    // render frame buffer 
+    pub fn render(self: *FrameBuffer) void {
+        set_currsor(self.x_frame_pos_, self.y_frame_pos_);
+
+        var x: u32 = 0; var y: u32 = 0;
+        for (self.frame_buffer) |ch| {
+            if (x == self.width_) { 
+                y += 1; x = 0;
+                set_currsor(0 + self.x_frame_pos_, y + self.y_frame_pos_);
+            }
+            x += 1;
+
+            if (ch == '\n' or ch == 0) { }
+            else { print("{c}", .{ch}); }
+        }
+    }
+
     height_: u32,
     width_: u32,
     x_frame_pos_: u32, 

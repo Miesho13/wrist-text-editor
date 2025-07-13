@@ -165,6 +165,10 @@ pub const FrameBuffer = struct {
     pub fn putc(self: *FrameBuffer, ch: u8, x: u32, y: u32) void {
         self.frame_buffer[y * self.width_ + x] = ch;
     }
+
+    pub fn puts(self: *FrameBuffer, s: []u8, x: u32, y: u32) void {
+        std.mem.copyForwards(u8, self.frame_buffer[(y * self.width_ + x)..], s);
+    }
     
     pub fn get_buffer(self: *FrameBuffer) []u8 {
         return self.frame_buffer;

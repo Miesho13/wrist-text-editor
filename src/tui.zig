@@ -16,6 +16,14 @@ pub fn enable_raw_mod() void {
     _ = c.tcsetattr(c.STDIN_FILENO, c.TCSAFLUSH, &raw);
 }
 
+pub fn cursor_off() void {
+    print("\x1b[?25l", .{});
+}
+
+pub fn cursor_on() void {
+    print("\x1b[?25h", .{});
+}
+
 pub fn clear() void {
     print("\x1b[2J\x1b[H", .{});
 }

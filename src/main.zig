@@ -16,6 +16,7 @@ const CLEAR_TERMINAL = "\x1b[2J\x1b[H";
 pub fn main() !void {
     tui.enable_raw_mod();
     tui.cursor_off();
+    defer tui.cursor_on();
     tui.clear();
 
     // const buffer: []const u8 = "test\nsome\nbuffer\nhelllllo\n";
@@ -24,35 +25,36 @@ pub fn main() !void {
     var frame_buffer = try tui.FrameBuffer.init(heap, tui.canvas_size().ws_row - 1, tui.canvas_size().ws_col, 0, 0);
     defer frame_buffer.deinit(heap);
 
-    var render_bench: [181*49]u8 = undefined;
-    // @memset(&render_bench, 'X');
+    var render_bench: [181*49]u16 = undefined;
+    @memset(&render_bench, ' ');
     frame_buffer.puts(&render_bench, 0, 0);
     // frame_buffer.putc(' ', 20, 20);
 
     // tui.render_frame_buffer(&frame_buffer);
     var x_pos: u32 = 0;
     var y_pos: u32 = 0;
-    frame_buffer.putc('X', x_pos, y_pos);
+    // frame_buffer.putc('█', x_pos, y_pos);
 
-    while(true) { 
+    while(tui.get_input() != 'q') { 
         var timer = try std.time.Timer.start();
         frame_buffer.render();
-        const elapsed = timer.read();
-        
+
         frame_buffer.putc(' ', x_pos, y_pos);
 
         if (x_pos == 181) { 
             y_pos += 1; x_pos = 0;
         }
         x_pos += 1;
-        if (x_pos == 181 and y_pos == 49) {
+        if (x_pos == 181 and y_pos == 48) {
             x_pos = 0; y_pos = 0;
         }
 
-        frame_buffer.putc('X', x_pos, y_pos);
+        frame_buffer.putc('█', x_pos, y_pos);
 
+        const elapsed = timer.read();
+        const float_elapsed: f64 = @floatFromInt(elapsed);
         tui.set_currsor(0, 100);
-        print("ns: {}", .{elapsed});
+        print("fps: {d:.2}", .{1_000_000_000 / float_elapsed});
         // std.time.sleep(1_000_000);
     }
 }

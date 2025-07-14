@@ -13,6 +13,8 @@ pub fn enable_raw_mod() void {
     _ = c.tcgetattr(c.STDIN_FILENO, &raw);
     raw.c_lflag &= ~(@as(c.tcflag_t, c.ECHO));
     raw.c_lflag &= ~(@as(c.tcflag_t, c.ICANON));
+    raw.c_cc[c.VMIN] = 0;
+    raw.c_cc[c.VTIME] = 0;
     _ = c.tcsetattr(c.STDIN_FILENO, c.TCSAFLUSH, &raw);
 }
 
@@ -104,10 +106,11 @@ pub const FrameBuffer = struct {
     frame_buffer : []u8,
 };
 
-pub fn render_frame_buffer(frame_buffer: *FrameBuffer) void {
-    for (frame_buffer.get_buffer()) |ch| {
-        if (ch == 0) { continue; }
-        print("{c}", .{ch});
+pub fn get_input() ?u8 {
+    var ch: u8 = 0;
+    if (c.read(c.STDIN_FILENO, &ch, 1) == 1) {
+        return ch;
     }
+    return null;
 }
 

@@ -54,7 +54,7 @@ pub fn get_key() u8 {
 pub const FrameBuffer = struct {
 
     pub fn init(allocator: std.mem.Allocator, height: u32, width: u32, x_frame_pos: u32, y_frame_pos: u32) !FrameBuffer {
-        const buffer: []u8 = try allocator.alloc(u8, height * width);
+        const buffer: []u16 = try allocator.alloc(u16, height * width);
         @memset(buffer, 0);
 
         return FrameBuffer {
@@ -70,12 +70,12 @@ pub const FrameBuffer = struct {
         allocator.free(self.frame_buffer);
     }
 
-    pub fn putc(self: *FrameBuffer, ch: u8, x: u32, y: u32) void {
+    pub fn putc(self: *FrameBuffer, ch: u16, x: u32, y: u32) void {
         self.frame_buffer[y * self.width_ + x] = ch;
     }
 
-    pub fn puts(self: *FrameBuffer, s: []u8, x: u32, y: u32) void {
-        std.mem.copyForwards(u8, self.frame_buffer[(y * self.width_ + x)..], s);
+    pub fn puts(self: *FrameBuffer, s: []u16, x: u32, y: u32) void {
+        std.mem.copyForwards(u16, self.frame_buffer[(y * self.width_ + x)..], s);
     }
     
     pub fn get_buffer(self: *FrameBuffer) []u8 {
@@ -95,7 +95,7 @@ pub const FrameBuffer = struct {
             x += 1;
 
             if (ch == '\n' or ch == 0) { }
-            else { print("{c}", .{ch}); }
+            else { print("{u}", .{@as(u21, ch)}); }
         }
     }
 
@@ -103,7 +103,7 @@ pub const FrameBuffer = struct {
     width_: u32,
     x_frame_pos_: u32, 
     y_frame_pos_: u32,
-    frame_buffer : []u8,
+    frame_buffer : []u16,
 };
 
 pub fn get_input() ?u8 {

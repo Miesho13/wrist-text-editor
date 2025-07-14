@@ -45,12 +45,6 @@ pub fn canvas_size() c.winsize {
     return w; 
 } 
 
-pub fn get_key() u8 {
-    var ch: u8 = undefined;
-    _ = c.read(c.STDIN_FILENO, &ch, 1);
-    return ch;
-}
-
 pub const FrameBuffer = struct {
 
     pub fn init(allocator: std.mem.Allocator, height: u32, width: u32, x_frame_pos: u32, y_frame_pos: u32) !FrameBuffer {
@@ -85,16 +79,15 @@ pub const FrameBuffer = struct {
     // render frame buffer 
     pub fn render(self: *FrameBuffer) void {
         set_currsor(self.x_frame_pos_, self.y_frame_pos_);
-
         var x: u32 = 0; var y: u32 = 0;
         for (self.frame_buffer) |ch| {
             if (x == self.width_) { 
-                y += 1; x = 0;
                 set_currsor(0 + self.x_frame_pos_, y + self.y_frame_pos_);
+                y += 1; x = 0;
             }
             x += 1;
 
-            if (ch == '\n' or ch == 0) { }
+            if (ch == '\n' or ch == 0) { continue; }
             else { print("{u}", .{@as(u21, ch)}); }
         }
     }
@@ -103,7 +96,7 @@ pub const FrameBuffer = struct {
     width_: u32,
     x_frame_pos_: u32, 
     y_frame_pos_: u32,
-    frame_buffer : []u16,
+    frame_buffer: []u16,
 };
 
 pub fn get_input() ?u8 {

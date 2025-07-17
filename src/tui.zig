@@ -107,3 +107,31 @@ pub fn get_input() ?u8 {
     return null;
 }
 
+
+pub const Bench = struct {
+    pub fn start() !Bench {
+        return Bench {
+            .tim = try std.time.Timer.start(),
+            .fps = 0,
+        };
+    }
+
+    pub fn stop(self: *Bench) void {
+        const elapsed = self.read();
+        const float_elapsed: f64 = @floatFromInt(elapsed);
+        self.fps = 1_000_000_000 / float_elapsed;
+    }
+
+    pub fn read(self: *Bench) u64 {
+        return self.tim.read();
+    }
+    
+    pub fn fps_print(self: Bench, x: u32, y: u32) void {
+        set_currsor(x, y);
+        print("{d:.2}", .{self.fps});
+    }
+
+    tim: std.time.Timer = undefined,
+    fps: f64 = 0, 
+};
+

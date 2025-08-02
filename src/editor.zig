@@ -79,6 +79,19 @@ pub const Editor = struct {
         }
     }
 
+    pub fn get_frame_buffer(self: *Editor, frame_buffer: []u16, 
+        width: u64, height: u64) !void {
+        var line_u16: [1024]u16 = undefined;
+        @memset(&line_u16, 0);
+
+        var line_idx: u32 = 0;
+        for (self.list.items) |line| {
+            _ = tui.u8_to_u16_slice(&line_u16, line.items);
+            _ = tui.FrameBufferBuilder.puts(frame_buffer, line_u16[0..line.items.len], 0, line_idx, width, height);
+            line_idx += 1;
+        }
+    }
+
     pub fn save(self: *Editor, path: []const u8) !void {
         self;
         path;

@@ -99,6 +99,72 @@ pub const FrameBuffer = struct {
     frame_buffer: []u16,
 };
 
+pub const FrameBufferBuilder = struct {
+    pub fn putc_mut(buffer: []u16, ch: u16, x: u32, y: u32, width: u64, height: u64) i64 {
+        if (y > height) { 
+            return -1; 
+        }
+
+        buffer[y * width + x] = ch;
+        return 1;
+    }
+
+    pub fn puts(buffer: []u16, s: []u16, x: u32, y: u32, width: u64, height: u64) i64 {
+        if (y > height) { 
+            return -1; 
+        }
+        if (s.len >= width) { 
+            return -1; 
+        }
+
+        std.mem.copyForwards(u16, buffer[(y * width + x)..], s);
+        return @intCast(s.len);
+    }
+};
+
+pub fn string_to_u16_slice(dest: []u16, str: []const u8) []u16 {
+
+    for (0..str.len) |i| {
+        dest[i] = @as(u16, str[i]);
+    }
+
+    return dest;
+}
+
+pub fn u8_to_u16_slice(dest: []u16, str: []u8) []u16 {
+
+    for (0..str.len) |i| {
+        dest[i] = @as(u16, str[i]);
+    }
+
+    return dest;
+}
+
+pub fn render_frame(buffer: []u16, width: u64, height: u64, 
+                    offx: u64, offy: u64) void {
+    set_currsor(offx, offy);
+
+    var xprint: u32 = 0; 
+    var yprint: u32 = 0; 
+
+    for (buffer) |ch| {
+        if (ch != 0 and ch != '\n') {
+            print("{u}", .{ch}); 
+        }
+
+        xprint += 1;
+        if (xprint == width) {
+            xprint = 0; 
+            yprint += 1;
+            if (yprint >= height) {
+                break;
+            }
+            set_currsor(0 + offx, yprint + offy);
+        }
+    }
+
+}
+
 pub fn get_input() ?u8 {
     var ch: u8 = 0;
     if (c.read(c.STDIN_FILENO, &ch, 1) == 1) {
